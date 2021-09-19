@@ -35,7 +35,6 @@ handles.SETTINGS.sched_file = [];
 handles.SETTINGS.boxes = [];
 
 handles.regKey = 'HKCU\Software\MATHWORKS\MATLAB\StartleReflex';
-% handles.settingsfn = GetRegKey(handles.regKey,'settingsfn');
 handles.settingsfn = getpref('StartleReflex','settingsfn',[]);
 
 if ~isempty(handles.settingsfn)
@@ -56,7 +55,6 @@ function figure1_CloseRequestFcn(hObject, eventdata, handles) %#ok<INUSL,DEFNU>
 
 state_halt_Callback(handles.state_halt, [], handles) 
 
-% SetRegKey(handles.regKey,'settingsfn',handles.settingsfn);
 setpref('StartleReflex','settingsfn',handles.settingsfn);
 
 % Hint: delete(hObject) closes the figure

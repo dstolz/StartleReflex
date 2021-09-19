@@ -36,10 +36,8 @@ h.output = hObject;
 h.SETTINGS.datadir  = [];
 h.SETTINGS.datasets = [];
 
-% h.regKey = 'HKCU\Software\MATHWORKS\MATLAB\StartleReflex';
 guidata(hObject, h);
 
-% sfn = GetRegKey(h.regKey,'rvsettingsfn');
 sfn = getpref('StartleReflex','rvsettingsfn',cd);
 
 if ~isempty(sfn)
