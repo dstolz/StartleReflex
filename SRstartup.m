@@ -1,26 +1,27 @@
+function p = SRstartup
+%[p] = SRstartup
+% 
 % set paths for Startle Reflex directory
+%
+% updated 9/2021 DJS
 
-fprintf('** Setting Startle Reflex Paths **')
-p = genpath([matlabroot,'\work\StartleReflex']);
-if isempty(p)
-    p = genpath('C:\Matlab_Work\StartleReflex');
-end
+fprintf('Setting Startle Reflex Paths ...')
 
-m = false(size(p));
+p = which(mfilename);
 
-s = strfind(p,';');
+p = genpath(fileparts(p));
 
-% ignore SVN directories
-k = 1;
-for i = 1:length(s)
-    if strfind(p(k:s(i)),'.svn')
-        m(k:s(i)) = true;
-    end
-    k = s(i)+1;
-end
+p = split(p,';');
+ind = contains(p,'.git') | cellfun(@isempty,p);
 
-p(m) = [];
+p(ind) = [];
 
+p = strjoin(p,';');
 addpath(p);
-clear
-clc
+
+
+fprintf(' done\n')
+
+
+if nargout == 0, clear p; end
+

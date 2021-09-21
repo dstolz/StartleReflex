@@ -32,6 +32,7 @@ set(handles.table_trialdefs,'data',DefaultRowDef);
 sch = TD2BHVR([],get(handles.table_basicdefs,'Data'));
 PlotSRSchema(sch,handles);
 
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -113,6 +114,37 @@ for i = 1:size(td,1)
 end
 td(ind,:) = [];
 
+function CustomFcn %#ok<DEFNU>
+h = guidata(gcbo);
+
+opts.Resize = 'on';
+opts.WindowStyle = 'modal';
+opts.Interpreter = 'none';
+
+
+if ~isfield(h,'customfcn'), h.customfcn = ''; end
+
+r = inputdlg('Enter name of custom function or erase to not use one.','SR', ...
+    1,{h.customfcn},opts);
+
+r = char(r);
+
+if ~isempty(r)
+    w = which(r);
+    if isempty(w)
+        uiwait(msgbox(sprintf('Function not found on path: "%s"',r), ...
+            'custom function','error','modal'));
+        r = h.customfcn;
+    else
+        fprintf('Custom Function = "%s" : %s\n',r,w)
+    end
+end
+
+h.customfcn = r;
+
+guidata(gcbo, h);
+
+
 function SaveSchedule %#ok<DEFNU>
 h = guidata(gcbo);
 
@@ -120,6 +152,10 @@ schedule.nreps = str2num(get(h.opt_num_blocks,'String')); %#ok<ST2NM>
 schedule.randomize = get(h.opt_randomize,'Value');
 schedule.ITI   = str2num(get(h.opt_iti,'String')); %#ok<ST2NM>
 schedule.description = get(h.schedule_description,'String');
+
+if ~isfield(h,'customfcn'), h.customfcn = ''; end
+schedule.customfcn = h.customfcn;
+    
 
 td = get(h.table_basicdefs,'Data');
 d  = TrimTrialDefs(get(h.table_trialdefs,'data'));
@@ -174,6 +210,11 @@ if ~isempty(d)
     td = [td; d];
 end
 
+if isfield(schedule,'customfcn'), h.customfcn = schedule.customfcn; end
+
+guidata(gcbo,h);
+
+
 % for i = 1:size(td,1)
 %     if isempty(td{i,5})
 %         return
@@ -181,6 +222,7 @@ end
 % end
 sch = TD2BHVR([],td);
 PlotSRSchema(sch,h);
+
 
 
 

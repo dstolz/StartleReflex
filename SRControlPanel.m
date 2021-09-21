@@ -403,9 +403,14 @@ function [schidx,nsidx] = UpdateRPtags(G_RP,G_PA5,h,schidx)
 
 % boxes = [h.SRBox.id];
 
-sch = h.schedule;
 
+
+sch = h.schedule;
 trials = sch.trials;
+
+
+
+
 
 if sch.randomize
     % select random trial
@@ -615,6 +620,15 @@ if all(h.schidx == s.nreps)
     state_halt_Callback(h.state_halt,true,h)
     return
 end
+
+
+% call a custom function to select the next trial and update trials if desired
+if isfield(h,'customfcn') && ~isempty(h.customfcn)
+    h.schedule.randomize = false;
+    fcn = str2func(h.customfcn);
+    h = fcn(h);
+end % customfcn
+
 
 % set parameters for next trial
 [h.schidx,h.nsidx] = UpdateRPtags(G_RP,G_PA5,h,h.schidx);
