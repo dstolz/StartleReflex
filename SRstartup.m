@@ -11,8 +11,11 @@ p = which(mfilename);
 
 p = genpath(fileparts(p));
 
-p = split(p,';');
-ind = contains(p,'.git') | cellfun(@isempty,p);
+% p = strsplit(p,';');
+% ind = contains(p,'.git') | cellfun(@isempty,p);
+
+p = strsplit(p,';');
+ind = cellfun(@isempty,p);
 
 p(ind) = [];
 

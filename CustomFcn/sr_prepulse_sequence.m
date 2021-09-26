@@ -4,7 +4,7 @@ function h = sr_prepulse_sequence(h)
 % Custom function creates a buffer for playback from the RPvds circuit
 
 % sampling rate???  
-Fs = h.SFreq(experiment.STIMMODS(1));
+Fs = h.SFreq(h.experiment.STIMMODS(1));
 
 sch = h.schedule;
 trials = sch.trials;
@@ -15,18 +15,21 @@ ind = parameter_indices(sch);
 
 
 
-% copy trials row for current schedule index
+% copy trials row for curren t schedule index
 T = trials(h.schidx,:);
 nstd = T{ind.stdCount};
 freq = T{ind.stdFreq};
 
 % TODO: CONVERT TIME (ms) TO SAMPLES AT STIMULUS MODULE SAMPLING RATE
-dur  = T{ind.ppdur};
+dur  = T{ind.PPDuration};
 isi  = T{ind.stdISI};
 
+dur = dur ./ 1000; % ms -> sec
+isi = isi ./ 1000; % ms -> sec
+isisamps = round(Fs.*isi);
 
 % generate standard tones
-y = [gen_tone(Fs,freq,dur), zeros(1,isi)];
+y = [gen_tone(Fs,freq,dur), zeros(1,isisamps)];
 y = repmat(y,1,nstd);
 
 
@@ -47,13 +50,12 @@ midpt = rfsamps/2;
 g = hann(rfsamps)'; % gate
 
 si = 1/Fs;
-tvec = 0:si:dur/Fs-si;
+tvec = 0:si:dur-si;
 
 y = sin(2.*pi.*freq.*tvec);
 
-g = [g(1:midpt), ones(1,length(y)), g(midpt+1:end)];
+g = [g(1:midpt), ones(1,length(y)-length(g)), g(midpt+1:end)];
 y = y.*g;
-
 
 
 

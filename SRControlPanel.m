@@ -239,8 +239,18 @@ else
     h.nracks = [];
 end
 
+
+h.schidx = 1;
+
+% call a custom function to select the next trial and update trials if desired
+if isfield(h.schedule,'customfcn') && ~isempty(h.schedule.customfcn)
+    h.schedule.randomize = false;
+    fcn = str2func(h.schedule.customfcn);
+    h = fcn(h);
+end % customfcn
+
 % set parameters for next trial
-[h.schidx,h.nsidx] = UpdateRPtags(G_RP,G_PA5,h,[]);
+[h.schidx,h.nsidx] = UpdateRPtags(G_RP,G_PA5,h,0);
 
 guidata(hObj,h);
 
@@ -457,8 +467,8 @@ for j = 1:length(sch.writemodule)
                 
             elseif ~ischar(par) && ismatrix(par)
                 % write buffer
-                v = trials{nsidx,j};
-                e = G_RP(m).WriteTagV(n,0,reshape(v,1,numel(v)));
+                G_RP(m).SetTagVal(sprintf('%s_size',n),numel(trials{nsidx,j}));
+                e = G_RP(m).WriteTagV(n,0,trials{nsidx,j}(:)');
                 
             elseif ischar(par)
                 % load from file
@@ -623,9 +633,9 @@ end
 
 
 % call a custom function to select the next trial and update trials if desired
-if isfield(h,'customfcn') && ~isempty(h.customfcn)
+if isfield(s,'customfcn') && ~isempty(s.customfcn)
     h.schedule.randomize = false;
-    fcn = str2func(h.customfcn);
+    fcn = str2func(s.customfcn);
     h = fcn(h);
 end % customfcn
 
